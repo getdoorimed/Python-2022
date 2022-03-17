@@ -54,12 +54,16 @@ print (int(32+41))
 #skip funny haha
 
 #5 Variables
-
+#1
 player_lives = int(input("How many lives would a player have in this game"))
 print ("The amount of lives you chose to pick is",player_lives)
+#2
 user_login = input("Please input a login name")
+print ("Thanks for logging in")
+#3
 money_storage = int(input("Please input how much money you would like to store"))
-
+print ("The amount you have currently have is",money_storage)
+#4
 
 
 
