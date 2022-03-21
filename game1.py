@@ -1,14 +1,17 @@
 from adventurelib import *
 
 
-@when("brush teeth")
-@when("brush")
-@when("clean teeth")
-@when("clean mouth")
-@when("brush mouth")
-def brush_teeth():
-	print("You brush your teeth")
+@when("ben")
+def ben():
+	say("Ben: Yeees")
 
+@when("ben do you love god")
+def ben_do_you_love_god():
+	say("Ben: No.")
+
+@when("ben shut your ass up")
+def benshutyoahhup():
+	say("Ben: Hohoho.")
 @when("comb hair")
 @when("comb")
 def comb_hair():
@@ -53,10 +56,11 @@ def enter_spaceship():
 	if current_room is not space:
 		say("There is no airlock here")
 		return
-else:
-	current_room = enter_spaceship
+	else:
+		current_room = enter_spaceship
 	print("""You heave yourself into the spaceship and slam you hand on the button to close the door.""")
 	print(current_room)
+
 
 #variables
 current_room = space
@@ -65,10 +69,19 @@ spaceship.south = quarters
 hallway.east == bridge
 hallway.north == cargo
 hallway.south == mess_hall
-hallway.west == airlock
+hallway.west == spaceship
 cargo.east == docking
 bridge.south == escape_pods
 mess_hall.west == quarters
+
+@when ("go DIRECTION")
+def travel(direction):
+	global current_room
+	if direction in current_room.exits():
+		current_room = current_room.exit(direction)
+		print(f"You go {direction}.")
+		print(current_room)
+	
 
 
 def main():
