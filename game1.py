@@ -1,6 +1,6 @@
 from adventurelib import *
 Room.items = Bag()
-"Hi"
+
 #define rooms
 
 space = Room("""
@@ -52,7 +52,7 @@ knife = Item("a dirty knife","knife")
 knife.description = "the knife has a dull sheen to it but it looks rather sharp."
 
 red_keycard = Item("a red keycard","keycard","red card","red card")
-red_keycard.description = "It's a red keycard. It probably opens a door or a locker."
+red_keycard.description = "It's a red keycard. It seems you'll need it to try get out."
 
 gun = Item("gun")
 gun.description = "A rusty but handy handgun."
@@ -66,18 +66,17 @@ doll.description = "A menacing doll, i wonder what it does."
 
 
 
-@when("enter airlock")
-@when("enter spaceship")
-@when("enter ship")
+@when("enter room")
+@when("enter bedroom")
 def enter_spaceship():
 	global current_room
 	#check in action can be done
 	if current_room is not space:
-		say("There is no airlock here")
+		say("You aren't allowed in here...")
 		return
 	else:
 		current_room = spaceship
-		print("""You heave yourself into the spaceship and slam you hand on the button to close the door.""")
+		print("""You get into your bedroom as you prepare to rest for the night.""")
 		print(current_room)
 
 
