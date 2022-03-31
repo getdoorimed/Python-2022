@@ -1,5 +1,5 @@
 from adventurelib import *
-
+Room.items = Bag()
 #Imports
 
 #Define Rooms
@@ -7,51 +7,36 @@ from adventurelib import *
 bedroom = Room("""
 	A very nice looking bedroom, there seems to be a door ahead, something tells you that you have to
 	go through it.""")
-
 hallway1 = Room("""
 	After enetering the door. you fall into a long and massive hallway with a menacing looking door that
 	glows purple light at the end.""")
-
 hallway2 = Room("""
 	You move closer to the door, you feel an unpleasant feeling as you get closer.""")
-
 hallway3 = Room("""
 	You're nearly there, the unpleasant feeling gets stronger but you decide to move in anyways.""")
-
 hallway4 = Room("""
 	You reach the door, but is it really worth going in? you ask yourself.
 	You decide to head in anyway.""")
-
 room1 = Room("""
 	You come in and you see a dull looking set of rooms, something tells you that something doesn't feel right.""")
-
 room2 = Room("""
 	The same set of dull looking rooms but something doesn't feel right""")
-
 room3 = Room("""
 	So many things are going in this room would you like to look around?""")
-
 room4 = Room("""
 	This room seems locked, you should look around for a key in the previous rooms.""")
-
 room5 = Room("""
 	You enter the room that you unlocked, you find a note that says "for every wrong turn you make-" then  """)
-
 room6 = Room("""
 	""")
-
 room7 = Room("""
 	""")
-
 room8 = Room("""
 	""")
-
 room9 = Room("""
 	""")
-
 room10 = Room("""
 	""")
-
 exit = Room("""
 	""")
 
@@ -62,11 +47,9 @@ bedroom.north = hallway1
 hallway1.north = hallway2
 hallway2.north = hallway3
 hallway3.north = hallway4
-hallway4.north = room1
+
 
 room1.west = room2
-
-
 
 room2.north = room3
 room2.west = room1
@@ -122,6 +105,10 @@ inventory = Bag()
 
 #Define Bags
 
+
+room1.items.add("doll")
+
+
 Item.description = "" #this adds a blank description to each item
 
 knife = Item("a dirty knife","knife")
@@ -133,10 +120,13 @@ red_keycard.description = "It's a red keycard. It seems you'll need it to try ge
 blue_keycard = Item("a blue keycard","blue card")
 
 gun = Item("gun")
-gun.description = "A rusty but handy handgun."
+gun.description = "a rusty but handy handgun."
 
 doll = Item("doll")
-doll.description = "A menacing doll, i wonder what it does."
+doll.description = "a menacing doll, i wonder what it does."
+
+gold_key = Item("gold key")
+gold_key.description = "This golden key must be important, you should pick it up"
 
 #Add Items to Bags
 
@@ -153,16 +143,29 @@ def enter_bedroom():
 		print("""You get into your bedroom as you prepare to rest for the night.""")
 		print(current_room)
 
+@when("enter door")
+@when("go to the door")
+@when("go inside the door")
+def enter_door():
+	global current_room
+	if current_room is not hallway4:
+		say("What are you doing?")
+		return
+	else:
+		current_room = hallway4
+		print("""You enter the door""")
+		print(current_room)
+
 
 
 @when("look")
 def look():
 	print(current_room)
 	print(f"There are exits to the {current_room.exits()}.")
-	if len(current_room.items) > 0: #if there are some items in the room
+	if len(current_room.items) > 0:
 		print("You also see: ")
-		for item in current_room.items:
-			print(item)#print out each item
+		for items in current_room.items:
+			print(items)
 
 @when("get ITEM")
 @when("take ITEM")
@@ -190,11 +193,13 @@ def travel(direction):
 @when("show inventory")
 @when("what is in my pocket")
 def player_inventory():
-	print("You are carrying")
+	print("You are carrying these items:")
 	for item in inventory:
 		print(item)
 
 @when("look at ITEM")
+@when("inspect ITEM")
+@when("view ITEM")
 def look_at(item):
 	if item in inventory:
 		t = inventory.find(item)
