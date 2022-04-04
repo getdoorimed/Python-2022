@@ -24,7 +24,7 @@ room2 = Room("""
 room3 = Room("""
 	So many things are going in this room would you like to look around?""")
 room4 = Room("""
-	This room seems locked, you should look around for a key in the previous rooms.""")
+	There's not much in this room, except for the noise that you heard from the start gets louder""")
 room5 = Room("""
 	You enter the room that you unlocked, you find a note that says "for every wrong turn you make-" then  """)
 room6 = Room("""
@@ -128,6 +128,9 @@ doll.description = "a menacing doll, i wonder what it does."
 gold_key = Item("gold key")
 gold_key.description = "This golden key must be important, you should pick it up"
 
+invisible_wall_breaker = Item("invisible wall breaker")
+invisible_wall_breaker.description = "This can be used to break through invisible walls!!! good job finding it."
+
 #Add Items to Bags
 
 @when("enter room")
@@ -178,16 +181,34 @@ def pickup(item):
 	else:
 		print(f"You don't see a {item}")
 
+@when("use ITEM")
+def use(item):
+	if inventory.find(item)==invisible_wall_breaker == lounge:
+		print("You use the breaker to open this area")
+		print("The invisible wall cracks open")
+		room3.west = room4
+		
 
+@when("search body")
+@when("search corpse")
+@when("search dead body")
+def 
 
 @when ("go DIRECTION")
 @when ("move DIRECTION")
 def travel(direction):
 	global current_room
+
+	if current_room == room4 and direction == 'west':
+		print("This door seems to be blocked with an invisible wall... you should try find an 'invisible wall breaker' in the past rooms to get through here")
+		return
+
 	if direction in current_room.exits():
 		current_room = current_room.exit(direction)
 		print(f"You go {direction}.")
 		print(current_room)
+	else:
+		print("You can't go that way.")
 	
 @when("inventory")
 @when("show inventory")
@@ -204,6 +225,7 @@ def look_at(item):
 	if item in inventory:
 		t = inventory.find(item)
 		print(t.description)
+		pass
 	else:
 		print(f"You aren't carrying an {item}")
 
