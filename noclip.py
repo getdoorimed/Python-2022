@@ -1,22 +1,13 @@
 from adventurelib import *
 Room.items = Bag()
+
+
 #Imports
 
 #Define Rooms
 
-bedroom = Room("""
-	A very nice looking bedroom, there seems to be a door ahead, something tells you that you have to
-	go through it.""")
-hallway1 = Room("""
-	After enetering the door. you fall into a long and massive hallway with a menacing looking door that
-	glows purple light at the end.""")
-hallway2 = Room("""
-	You move closer to the door, you feel an unpleasant feeling as you get closer.""")
-hallway3 = Room("""
-	You're nearly there, the unpleasant feeling gets stronger but you decide to move in anyways.""")
-hallway4 = Room("""
-	You reach the door, but is it really worth going in? you ask yourself.
-	You decide to head in anyway.""")
+backrooms0 = Room("""
+	You noclip into the backrooms... instantly regretting the choice you decide you wanna get out because this place is spoopy.""")
 room1 = Room("""
 	You come in and you see a dull looking set of rooms, something tells you that something doesn't feel right.""")
 room2 = Room("""
@@ -42,71 +33,36 @@ exit = Room("""
 
 #Define Connections
 
-bedroom.north = hallway1
-
-hallway1.north = hallway2
-hallway2.north = hallway3
-hallway3.north = hallway4
-
+backrooms0.north = room1
 
 room1.west = room2
 
 room2.north = room3
-room2.west = room1
-room2.east = room1
-room2.south = room1
-
 
 room3.west = room4
-room3.north = room1
-room3.east = room1
-room3.south = room2
 
 room4.north = room5
-room4.east = room3
-room4.west = room1
-room4.south = room1
 
 room5.north = room6
-room5.east = room1
-room5.south = room5
-room5.west = room1
 
-room6.west = room1
-room6.north = room1
 room6.east = room7
-room6.south = room5
 
 room7.east = room8
-room7.north = room1
-room7.west = room6
-room7.south = room1
 
 room8.east = room9
-room8.north = room1
-room8.south = room1
-room8.west = room7
 
-room9.north = room1
-room9.east = room1
-room9.west = room8
-room9.south = room9
+room9.south = room10
 
-room10.north = room9
-room10.west = room1
-room10.east = room1
 room10.south = exit
 
 #Define Items
-current_room = bedroom
-inventory = Bag()
+
+
+
 
 
 
 #Define Bags
-
-
-room1.items.add("doll")
 
 
 Item.description = "" #this adds a blank description to each item
@@ -125,28 +81,42 @@ gun.description = "a rusty but handy handgun."
 doll = Item("doll")
 doll.description = "a menacing doll, i wonder what it does."
 
+dead_body = Item("dead body")
+dead_body.description = "This body seemed like it's been here for quite a time."
+
 gold_key = Item("gold key")
 gold_key.description = "This golden key must be important, you should pick it up"
 
 invisible_wall_breaker = Item("invisible wall breaker")
 invisible_wall_breaker.description = "This can be used to break through invisible walls!!! good job finding it."
 
+rusty_gun = Item("rusty gun")
+rusty_gun.description = "This gun seems to be old but it should work against any threats."
 #Add Items to Bags
 
-@when("enter room")
+room1.items.add(doll)
+
+room5.items.add(dead_body)
+
+
+
+current_room = backrooms0
+inventory = Bag()
+
+@when("enter backrooms")
 @when("enter bedroom")
-def enter_bedroom():
+def enter_backrooms():
 	global current_room
 	#check in action can be done
-	if current_room is not bedroom:
+	if current_room is not backrooms0:
 		say("You aren't allowed in here...")
 		return
 	else:
-		current_room = bedroom
-		print("""You get into your bedroom as you prepare to rest for the night.""")
+		current_room = backrooms0
 		print(current_room)
 
 @when("enter door")
+@when("noclip backrooms")
 @when("go to the door")
 @when("go inside the door")
 def enter_door():
@@ -189,11 +159,6 @@ def use(item):
 		room3.west = room4
 		
 
-@when("search body")
-@when("search corpse")
-@when("search dead body")
-def 
-
 @when ("go DIRECTION")
 @when ("move DIRECTION")
 def travel(direction):
@@ -208,7 +173,8 @@ def travel(direction):
 		print(f"You go {direction}.")
 		print(current_room)
 	else:
-		print("You can't go that way.")
+		print("You can't go that way, you have to go back to the start")
+		current_room = room1
 	
 @when("inventory")
 @when("show inventory")
@@ -229,6 +195,20 @@ def look_at(item):
 	else:
 		print(f"You aren't carrying an {item}")
 
+@when("search body")
+@when("look at body")
+@when("search corpse")
+@when("look at corpse")
+def search_body():
+	global body_searched
+	if current_room == room5 and body_searched == False:
+		print("you search the dead body and you hear a noise rustle behind you, you find a rusty pistol in the process")
+		current_room.items.add(rusty_gun)
+		body_searched = True
+	elif current_room == cargo and body_searched == True:
+		print("You already searched this body")
+	else:
+		print("There is no body here to search")
 
 
 
