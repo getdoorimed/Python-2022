@@ -92,32 +92,32 @@ gold_key = Item("gold key")
 gold_key.description = "This golden key must be important, you should pick it up"
 
 
-rusty_gun = Item("rusty gun")
-rusty_gun.description = "This gun seems to be old but it should work against any threats."
-
-bag = Item("rusty gun")
+bag = Item("gun")
 bag.description = "Something seems to be in this bag."
 
 #Add Items to Bags
 
 
 room1.items.add(doll)
+room2.items.add(red_keycard)
 room3.items.add(bag)
 room5.items.add(dead_body)
+room7.items.add(gold_key)
+room2.items.add(knife)
+room8.items.add(gun)
 
-
-
+#This defines variables
 current_room = backrooms0
 inventory = Bag()
-room4.unlocked = False
-room8.unlocked = False
-
+room4_unlocked = False
+room8_unlocked = False
+exit_unlocked = False
 
 @when("enter backrooms")
 @when("enter bedroom")
 def enter_backrooms():
 	global current_room
-	#check in action can be done
+	#check if action can be done
 	if current_room is not backrooms0:
 		say("You aren't allowed in here...")
 		return
@@ -125,6 +125,7 @@ def enter_backrooms():
 		current_room = backrooms0
 		print(current_room)
 
+#this lets you start the game
 @when("enter door")
 @when("noclip backrooms")
 @when("go to the door")
@@ -140,7 +141,7 @@ def enter_door():
 		print(current_room)
 
 
-
+#This code makes it so you can look for items in the room you are in
 @when("look")
 def look():
 	print(current_room)
@@ -150,6 +151,7 @@ def look():
 		for items in current_room.items:
 			print(items)
 
+#This code lets you pick up items 
 @when("get ITEM")
 @when("take ITEM")
 @when("pick up ITEM")
@@ -158,18 +160,10 @@ def pickup(item):
 		t = current_room.items.take(item)
 		inventory.add(t)
 		print(f"You pick up the {item}")
-	else:
+	else: #Code that shows what will happen if you dont see an item
 		print(f"You don't see a {item}")
 
-@when("use ITEM")
-def use(item):
-	if inventory.find(item)==invisible_wall_breaker == lounge:
-		print("You use the breaker to open this area")
-		print("The invisible wall cracks open")
-		room3.west = room4
-		
-
-	
+#shows you what's in your inventory		
 @when("inventory")
 @when("show inventory")
 @when("what is in my pocket")
@@ -178,6 +172,7 @@ def player_inventory():
 	for item in inventory:
 		print(item)
 
+#lets you look at the item description
 @when("look at ITEM")
 @when("inspect ITEM")
 @when("view ITEM")
@@ -214,17 +209,19 @@ def search_bag():
 	global bag_searched
 	if current_room == room3 and bag_searched == False:
 		print("You search the bag")
-		current_room.items.add(rusty_gun)
+		current_room.items.add(gun)
 		bag_searched = True 
 	elif current_room == room3 and body_searched == True:
 		print("You already searched this bag")
 	else:
 		print("There is no body here to search")
 
+#these set of codes makes it so you can use items to open locked areas
 @when("use red keycard")
 @when("use red card")
 def use_red_keycard():
 	global room4_unlocked
+	global current_room
 	if current_room == room3 and inventory.find("red keycard"):
 		say("You unlocked the door.")
 		room4_unlocked = True 
@@ -235,21 +232,39 @@ def use_red_keycard():
 @when("use blue card")
 def use_blue_keycard():
 	global room8_unlocked
-	if current_room == room8 and inventory.find("blue keycard"):
+	if current_room == room7 and inventory.find("blue keycard"):
 		say("You unlocked the door.")
 		room8_unlocked = True 
-	elif current_room is not room8:
+	elif current_room is not room7:
 		say("You cannot use that here.")
 
+@when("use gold key")
+@when("use key")
+def use_gold_key():
+	global exit_unlocked 
+	if current_room == room10 and inventory.find("gold key"):
+		say("You unlocked the final door.")
+		exit_unlocked = True
+	elif current_room is not room10:
+		say("You cannot use that key here, perhaps you can use it somewhere else.")
 
-
+#direction code that confirms the directions for being locked or making it so if you go the wrong way
+#you go back to the start
 @when ("go DIRECTION")
 @when ("move DIRECTION")
 def travel(direction):
 	global current_room
+	
+	if room4_unlocked == True:
+		room3.west = room4
 
-	if current_room == room4 and direction == 'west':
-		print("This door seems to be blocked with an invisible wall... you should try find an 'invisible wall breaker' in the past rooms to get through here")
+
+	if current_room == room3 and room4_unlocked == False and direction == 'west':
+		print("This Area is locked")
+		return
+
+	if current_room == room7 and room8_unlocked == False and direction == 'east':
+		print("This Area seems to be locked")
 		return
 
 	if direction in current_room.exits():
