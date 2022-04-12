@@ -7,7 +7,8 @@ Room.items = Bag()
 #Define Rooms
 
 backrooms0 = Room("""
-	You noclip into the backrooms... instantly regretting the choice you decide you wanna get out because this place is spoopy.""")
+	You noclip into the backrooms...
+	instantly regretting the choice you decide you wanna get out because this place gives an unnerving feel.""")
 room1 = Room("""
 	You come in and you see a dull looking set of rooms, something tells you that something doesn't feel right.""")
 room2 = Room("""
@@ -19,17 +20,20 @@ room4 = Room("""
 room5 = Room("""
 	You enter the room that you unlocked, you find a note that says "for every wrong turn you make-" then  """)
 room6 = Room("""
-	""")
+	As you head in further in the backrooms, the unsettling feeling dissapears...for now.""")
 room7 = Room("""
-	""")
+	You see a figure running towards you""")
 room8 = Room("""
-	""")
+	A locked door... You wonder what could happen if you go through it.""")
 room9 = Room("""
-	""")
+	You see a light towards you but it seems that this is far from over.""")
 room10 = Room("""
-	""")
+	The door for the exit is close, you'll finally be free.""")
 exit = Room("""
-	""")
+	You leave the backrooms!!! congratulations you beat the game... wait... where are we...
+	this doesn't seem like the outside world?
+
+	TO BE CONTINUED....""")
 
 #Define Connections
 
@@ -87,21 +91,27 @@ dead_body.description = "This body seemed like it's been here for quite a time."
 gold_key = Item("gold key")
 gold_key.description = "This golden key must be important, you should pick it up"
 
-invisible_wall_breaker = Item("invisible wall breaker")
-invisible_wall_breaker.description = "This can be used to break through invisible walls!!! good job finding it."
 
 rusty_gun = Item("rusty gun")
 rusty_gun.description = "This gun seems to be old but it should work against any threats."
+
+bag = Item("rusty gun")
+bag.description = "Something seems to be in this bag."
+
 #Add Items to Bags
 
-room1.items.add(doll)
 
+room1.items.add(doll)
+room3.items.add(bag)
 room5.items.add(dead_body)
 
 
 
 current_room = backrooms0
 inventory = Bag()
+room4.unlocked = False
+room8.unlocked = False
+
 
 @when("enter backrooms")
 @when("enter bedroom")
@@ -159,22 +169,6 @@ def use(item):
 		room3.west = room4
 		
 
-@when ("go DIRECTION")
-@when ("move DIRECTION")
-def travel(direction):
-	global current_room
-
-	if current_room == room4 and direction == 'west':
-		print("This door seems to be blocked with an invisible wall... you should try find an 'invisible wall breaker' in the past rooms to get through here")
-		return
-
-	if direction in current_room.exits():
-		current_room = current_room.exit(direction)
-		print(f"You go {direction}.")
-		print(current_room)
-	else:
-		print("You can't go that way, you have to go back to the start")
-		current_room = room1
 	
 @when("inventory")
 @when("show inventory")
@@ -195,6 +189,8 @@ def look_at(item):
 	else:
 		print(f"You aren't carrying an {item}")
 
+
+
 @when("search body")
 @when("look at body")
 @when("search corpse")
@@ -205,10 +201,64 @@ def search_body():
 		print("you search the dead body and you hear a noise rustle behind you, you find a rusty pistol in the process")
 		current_room.items.add(rusty_gun)
 		body_searched = True
-	elif current_room == cargo and body_searched == True:
+	elif current_room == room5 and body_searched == True:
 		print("You already searched this body")
 	else:
 		print("There is no body here to search")
+
+@when("search bag")
+@when("look at bag")
+@when("search bag")
+@when("look at bag")
+def search_bag():
+	global bag_searched
+	if current_room == room3 and bag_searched == False:
+		print("You search the bag")
+		current_room.items.add(rusty_gun)
+		bag_searched = True 
+	elif current_room == room3 and body_searched == True:
+		print("You already searched this bag")
+	else:
+		print("There is no body here to search")
+
+@when("use red keycard")
+@when("use red card")
+def use_red_keycard():
+	global room4_unlocked
+	if current_room == room3 and inventory.find("red keycard"):
+		say("You unlocked the door.")
+		room4_unlocked = True 
+	elif current_room is not room3:
+		say("You cannot use that here.")
+
+@when("use blue keycard")
+@when("use blue card")
+def use_blue_keycard():
+	global room8_unlocked
+	if current_room == room8 and inventory.find("blue keycard"):
+		say("You unlocked the door.")
+		room8_unlocked = True 
+	elif current_room is not room8:
+		say("You cannot use that here.")
+
+
+
+@when ("go DIRECTION")
+@when ("move DIRECTION")
+def travel(direction):
+	global current_room
+
+	if current_room == room4 and direction == 'west':
+		print("This door seems to be blocked with an invisible wall... you should try find an 'invisible wall breaker' in the past rooms to get through here")
+		return
+
+	if direction in current_room.exits():
+		current_room = current_room.exit(direction)
+		print(f"You go {direction}.")
+		print(current_room)
+	else:
+		print("You can't go that way, you have to go back to the start")
+		current_room = room1
 
 
 
