@@ -59,13 +59,6 @@ room9.south = room10
 
 room10.south = exit
 
-#Define Items
-
-
-
-
-
-
 #Define Bags
 
 
@@ -74,37 +67,25 @@ Item.description = "" #this adds a blank description to each item
 knife = Item("a dirty knife","knife")
 knife.description = "the knife has a dull sheen to it but it looks rather sharp."
 
-red_keycard = Item("a red keycard","red card")
+red_keycard = Item("a red keycard","red card", "red keycard")
 red_keycard.description = "It's a red keycard. It seems you'll need it to try get out."
 
-blue_keycard = Item("a blue keycard","blue card")
-
-gun = Item("gun")
-gun.description = "a rusty but handy handgun."
+blue_keycard = Item("a blue keycard","blue card", "blue keycard")
 
 doll = Item("doll")
 doll.description = "a menacing doll, i wonder what it does."
 
-dead_body = Item("dead body")
-dead_body.description = "This body seemed like it's been here for quite a time."
-
 gold_key = Item("gold key")
 gold_key.description = "This golden key must be important, you should pick it up"
-
-
-bag = Item("gun")
-bag.description = "Something seems to be in this bag."
 
 #Add Items to Bags
 
 
 room1.items.add(doll)
 room2.items.add(red_keycard)
-room3.items.add(bag)
-room5.items.add(dead_body)
+room6.items.add(blue_keycard)
 room7.items.add(gold_key)
 room2.items.add(knife)
-room8.items.add(gun)
 
 #This defines variables
 current_room = backrooms0
@@ -113,8 +94,10 @@ room4_unlocked = False
 room8_unlocked = False
 exit_unlocked = False
 
+#this lets you start the game
 @when("enter backrooms")
-@when("enter bedroom")
+@when("noclip baclrooms")
+@when("go inside backrooms")
 def enter_backrooms():
 	global current_room
 	#check if action can be done
@@ -125,20 +108,33 @@ def enter_backrooms():
 		current_room = backrooms0
 		print(current_room)
 
-#this lets you start the game
-@when("enter door")
-@when("noclip backrooms")
-@when("go to the door")
-@when("go inside the door")
-def enter_door():
+#direction code that confirms the directions for being locked or making it so if you go the wrong way
+#you go back to the start
+@when ("go DIRECTION")
+@when ("move DIRECTION")
+def travel(direction):
 	global current_room
-	if current_room is not hallway4:
-		say("What are you doing?")
+	
+	if room4_unlocked == True:
+		room3.west = room4
+
+
+	if current_room == room3 and room4_unlocked == False and direction == 'west':
+		print("This Area is locked")
 		return
-	else:
-		current_room = hallway4
-		print("""You enter the door""")
+
+	if current_room == room7 and room8_unlocked == False and direction == 'east':
+		print("This Area seems to be locked")
+		return
+
+
+	if direction in current_room.exits():
+		current_room = current_room.exit(direction)
+		print(f"You go {direction}.")
 		print(current_room)
+	else:#will make it so if you go the wrong you have to go back to the start if you go the wrong way 
+		print("You can't go that way, you have to go back to the start")
+		current_room = room1
 
 
 #This code makes it so you can look for items in the room you are in
@@ -184,49 +180,18 @@ def look_at(item):
 	else:
 		print(f"You aren't carrying an {item}")
 
-
-
-@when("search body")
-@when("look at body")
-@when("search corpse")
-@when("look at corpse")
-def search_body():
-	global body_searched
-	if current_room == room5 and body_searched == False:
-		print("you search the dead body and you hear a noise rustle behind you, you find a rusty pistol in the process")
-		current_room.items.add(rusty_gun)
-		body_searched = True
-	elif current_room == room5 and body_searched == True:
-		print("You already searched this body")
-	else:
-		print("There is no body here to search")
-
-@when("search bag")
-@when("look at bag")
-@when("search bag")
-@when("look at bag")
-def search_bag():
-	global bag_searched
-	if current_room == room3 and bag_searched == False:
-		print("You search the bag")
-		current_room.items.add(gun)
-		bag_searched = True 
-	elif current_room == room3 and body_searched == True:
-		print("You already searched this bag")
-	else:
-		print("There is no body here to search")
-
 #these set of codes makes it so you can use items to open locked areas
 @when("use red keycard")
 @when("use red card")
 def use_red_keycard():
 	global room4_unlocked
-	global current_room
 	if current_room == room3 and inventory.find("red keycard"):
 		say("You unlocked the door.")
 		room4_unlocked = True 
-	elif current_room is not room3:
+	elif current_room != room3:
 		say("You cannot use that here.")
+	else:
+		print("You can't do that")
 
 @when("use blue keycard")
 @when("use blue card")
@@ -248,32 +213,7 @@ def use_gold_key():
 	elif current_room is not room10:
 		say("You cannot use that key here, perhaps you can use it somewhere else.")
 
-#direction code that confirms the directions for being locked or making it so if you go the wrong way
-#you go back to the start
-@when ("go DIRECTION")
-@when ("move DIRECTION")
-def travel(direction):
-	global current_room
-	
-	if room4_unlocked == True:
-		room3.west = room4
 
-
-	if current_room == room3 and room4_unlocked == False and direction == 'west':
-		print("This Area is locked")
-		return
-
-	if current_room == room7 and room8_unlocked == False and direction == 'east':
-		print("This Area seems to be locked")
-		return
-
-	if direction in current_room.exits():
-		current_room = current_room.exit(direction)
-		print(f"You go {direction}.")
-		print(current_room)
-	else:
-		print("You can't go that way, you have to go back to the start")
-		current_room = room1
 
 
 
